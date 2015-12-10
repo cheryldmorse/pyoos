@@ -17,7 +17,7 @@ class Collector(object):
         return self._start_time
 
     def set_start_time(self, time):
-        if time is not None:
+        if time is not None and time != 'latest':
             if not time.tzinfo:
                 time = time.replace(tzinfo=pytz.utc)
             time = time.astimezone(pytz.utc)

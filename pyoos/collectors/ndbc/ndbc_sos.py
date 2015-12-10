@@ -17,7 +17,7 @@ class NdbcSos(IoosSweSos):
 
         if self.bbox is not None:
             params["featureofinterest"] = "BBOX:%s" % ",".join(map(lambda x: unicode(x), self.bbox))
-
+     
         if self.features is None or len(self.features) < 1:
             params["offerings"] = ["urn:ioos:network:noaa.nws.ndbc:all"]
         elif len(self.features) > 1:
@@ -25,11 +25,12 @@ class NdbcSos(IoosSweSos):
             print "NDBC does not support filtering by > 1 station at a time... returning all stations."
             params["offerings"] = ["urn:ioos:network:noaa.nws.ndbc:all"]
         elif len(self.features) == 1:
-            params["offerings"] = ["urn:ioos:station:wmo:%s" % self.features[0]]
+            params["offerings"] = self.features
 
         if params.get("responseFormat", None) is None:
             params["responseFormat"] = 'text/csv'
-
+            
+        
         if self.variables is None or len(self.variables) < 1:
             raise ValueError("You must set a filter for at least one variable (observedProperty)")
         else:

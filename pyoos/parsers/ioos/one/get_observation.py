@@ -7,7 +7,9 @@ from shapely.geometry import box, Point
 
 from pyoos.parsers.ioos.get_observation import IoosGetObservation
 from pyoos.parsers.ioos.one.timeseries import TimeSeries
+from pyoos.parsers.ioos.one.timeseries_ndbc import TimeSeries_ndbc
 from pyoos.parsers.ioos.one.timeseries_profile import TimeSeriesProfile
+from pyoos.parsers.ioos.one.timeseries_profile_ndbc import TimeSeriesProfileNdbc
 
 
 def get_namespaces():
@@ -101,3 +103,15 @@ class OmObservation(object):
                 self.feature = TimeSeriesProfile(data).feature
             else:
                 print "No feature type found"
+        else:
+            data = self.results.find(nspv("swe20:DataStream"))
+            if data is not None:
+                if self.feature_type == 'timeSeries' or self.feature_type == 'point':
+                    self.feature = TimeSeries_ndbc(data).feature
+                else:
+                    self.feature = TimeSeriesProfileNdbc(data).feature
+            
+            
+            
+            
+            

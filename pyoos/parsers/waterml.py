@@ -72,7 +72,6 @@ class WaterML11ToPaegan(object):
 
                     if dt not in times.keys():
                         times[dt] = []
-
                     times[dt].append(Member(value=r.value, unit=variable.unit.code, name=variable.variable_name, description=variable.variable_description, standard=variable.variable_code))
 
             station = stations[station_lookup.index(station_code)]
@@ -80,7 +79,8 @@ class WaterML11ToPaegan(object):
                 p = Point()
                 p.time = dts
                 p.location = station.location
-                p.members = members
+                for member in members:
+                    p.add_member(member)
                 station.add_element(p)
 
         self.feature = StationCollection(elements=stations)

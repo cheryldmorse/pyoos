@@ -5,6 +5,7 @@ from owslib.util import testXMLValue
 
 from shapely.geometry import Point, box
 import requests
+from lxml.etree import XMLSyntaxError
 
 
 class NerrsSoap(Collector):
@@ -54,8 +55,10 @@ class NerrsSoap(Collector):
         headers = {
             "SOAPAction"        : "\"\"",
         }
+        
         r = requests.post(self.wsdl_url, data=etree.tostring(enve), headers=headers)
         return etree.fromstring(r.text[38:]).find(".//returnData")
+  
 
     def list_features(self):
         return sorted(map(lambda s: s['Station_Code'], self.stations), key=str.lower)
@@ -108,10 +111,12 @@ class NerrsSoap(Collector):
                 else:
                     # Not a date range query
                     soap_env = self._build_exportSingleParamXMLNew(f)
-
                 if soap_env is not None:
-                    response = self._makesoap(soap_env)
-                    results[f] = etree.tostring(response)
+                    try:
+                        response = self._makesoap(soap_env)
+                        results[f] = etree.tostring(response)
+                    except XMLSyntaxError:
+                        pass
 
             return results
 

@@ -36,11 +36,13 @@ class IoosSweSos(Collector):
 
         if self.bbox is not None:
             params["featureOfInterest"] = "BBOX:%s,%s,%s,%s" % (self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3])
-
-        if self.start_time is not None:
-            params["eventTime"] = self.start_time.strftime('%Y-%m-%dT%H:%M:%SZ')
-        if self.end_time is not None:
-            params["eventTime"] += "/%s" % self.end_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+        if self.start_time == 'latest':
+            params["eventTime"] = 'latest'
+        else:
+            if self.start_time is not None:
+                params["eventTime"] = self.start_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+            if self.end_time is not None:
+                params["eventTime"] += "/%s" % self.end_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
         if self.variables is None or len(self.variables) < 1:
             raise ValueError("You must set a filter for at least one variable (observedProperty)")
