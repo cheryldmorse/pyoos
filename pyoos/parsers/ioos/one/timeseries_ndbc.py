@@ -88,6 +88,10 @@ class TimeSeries_ndbc(object):
             elif field.name == "altitude":
                 height      = None
                 location_quantity = record.get_by_name("altitude").content
+                
+                altitude_quantity = record.get_by_name("altitude").content
+                s.set_property("altitude_units",altitude_quantity.uom)
+
                 if location_quantity.referenceFrame == "#%s_frame" % s.name:
                     # Uses the station as reference frame
                     if location_quantity.value and z:
@@ -127,11 +131,14 @@ class TimeSeries_ndbc(object):
                 
                     # check to see if dealing with a data array
                     if isinstance(field.content, DataArray):
-                        element_count_field = field.content.elementCountParent
+                        if hasattr(field.content, 'elementCountParent'):
+                            element_count_field = field.content.elementCountParent
+                        else:
+                            element_count_field = field.content.elementCount
+
                         count_field = field.content.elementCount
                         if count_field.text == None:
                             columns.append(element_count_field)
-                        element_count_name = element_count_field.attrib['name']
                         element_type = field.content.elementType
                         data_array_columns[element_count_field] = []
                         for field in element_type.content.field:
@@ -197,6 +204,7 @@ class TimeSeries_ndbc(object):
                     m = Member( units=varUnits[var_name],
                                         name=var_name,
                                         standard=varStandardNames[var_name],
+                                        sensor=sensor_name,
                                         value=value)
                     members.append(m)
             
@@ -217,6 +225,8 @@ class TimeSeries_ndbc(object):
 #             self.feature = StationCollection(elements=stations)
 #         elif len(stations) == 1:
         self.feature = PointCollection(elements=pt_list)
+        self.depth_units = s.get_property("altitude_units")
+
         #else:
          #   print "No stations found!"
 

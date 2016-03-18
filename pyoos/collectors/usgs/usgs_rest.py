@@ -40,9 +40,9 @@ class UsgsRest(Collector):
                                 Please set all but one of the filters to None and try again.""")
 
         if self.start_time is not None:
-            params["startDT"] = self.start_time.strftime('%Y-%m-%dT%H:%M')
+            params["startDT"] = self.start_time.strftime('%Y-%m-%dT%H:%MZ')
         if self.end_time is not None:
-            params["endDT"] = self.end_time.strftime('%Y-%m-%dT%H:%M')
+            params["endDT"] = self.end_time.strftime('%Y-%m-%dT%H:%MZ')
         if self.bbox is not None:
             params["bBox"] = ",".join(map(lambda x: unicode(x), self.bbox))
         if self.variables is not None and len(self.variables) > 0:

@@ -142,6 +142,8 @@ class TimeSeriesProfileNdbc(object):
             elif field.name == "altitude":
                 height      = None
                 altitude_quantity = record.get_by_name("altitude").content
+                
+                s.set_property("altitude_units",altitude_quantity.uom)
                 if altitude_quantity.value == None:
                     columns.append(field)
                 elif altitude_quantity.referenceFrame == "#%s_frame" % s.name:
@@ -255,6 +257,7 @@ class TimeSeriesProfileNdbc(object):
                     m = Member( units=varUnits[var_name],
                                         name=var_name,
                                         standard=varStandardNames[var_name],
+                                        sensor=sensor_name,
                                         value=value)
                     members.append(m)
             
@@ -274,9 +277,11 @@ class TimeSeriesProfileNdbc(object):
 #         if len(stations) > 1:
 #             self.feature = StationCollection(elements=stations)
 #         elif len(stations) == 1:
+
         profileCollection = ProfileCollection(elements=pt_list)
         profileCollection.set_depth_range(all_depths)
         self.feature = profileCollection
+        self.depth_units = s.get_property("altitude_units")
         #else:
          #   print "No stations found!"
 

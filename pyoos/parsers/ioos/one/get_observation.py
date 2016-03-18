@@ -107,9 +107,13 @@ class OmObservation(object):
             data = self.results.find(nspv("swe20:DataStream"))
             if data is not None:
                 if self.feature_type == 'timeSeries' or self.feature_type == 'point':
-                    self.feature = TimeSeries_ndbc(data).feature
+                    ts = TimeSeries_ndbc(data)
+                    self.depth_units = ts.depth_units
+                    self.feature = ts.feature
                 else:
-                    self.feature = TimeSeriesProfileNdbc(data).feature
+                    ndbcProf = TimeSeriesProfileNdbc(data)
+                    self.depth_units = ndbcProf.depth_units
+                    self.feature = ndbcProf.feature
             
             
             
