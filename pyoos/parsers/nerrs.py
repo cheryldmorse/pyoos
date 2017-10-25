@@ -137,11 +137,18 @@ class NerrsToPaegan(object):
                     if child.tag not in skip_tags:
                         try:
                             val = float(child.text)
-                            p.add_member(Member(value=val, name=child.tag, description=child.tag,
+                            if child.tag.startswith('F_'):
+                                p.add_member(Member(value=val, name=child.tag, description='QAQC Flags for ' +child.tag.replace('F_',''),
                                                 unit=units(child.tag), standard=standard(child.tag)))
+                            else:
+                                p.add_member(Member(value=val, name=child.tag, description=child.tag,
+                                                unit=units(child.tag), standard=standard(child.tag)))
+                            
                         except TypeError:
                             # Value was None
                             pass
+                        except Exception as e:
+                            print 'error'
 
                 s.add_element(p)
 

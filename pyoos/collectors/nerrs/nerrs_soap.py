@@ -97,17 +97,24 @@ class NerrsSoap(Collector):
         results = self.raw()
         return NerrsToPaegan(results, nerrs_stations=self.stations).feature
 
-    def raw(self, **kwargs):
-        # These are the features we will actually query against
+
+    def add_qcqa_flags_to_request(self):
+        query_features = self._get_query_features()
+        for f in query_features:
+            feature_vars = self.list_variables(feature=f)
+            qaqc=''
+
+            for var in feature_vars:
+                qaqc = qaqc + ',F_' + var
+                        # These are the features we will actually query against
+            s = self.get_station(f)
+            s['Params_Reported'] = s['Params_Reported']+qaqc
+     
+            
+        
+    
+    def _get_query_features(self):
         query_features = []
-
-        if self.bbox is None and self.features is None:
-            raise ValueError("NERRS requires a BBOX or Feature filter")
-
-        if self.bbox is not None and self.features is not None:
-            print "Both a BBox and Feature filter is defined, BBOX takes precedence"
-
-        # BBox takes precedence over features
         if self.bbox is not None:
             test_box = box(self.bbox[0], self.bbox[1], self.bbox[2], self.bbox[3])
             # Set the features and call collect again
@@ -117,6 +124,20 @@ class NerrsSoap(Collector):
                     query_features.append(s['Station_Code'])
         else:
             query_features = self.features
+        return query_features
+    
+    
+    def raw(self, **kwargs):
+   
+
+        if self.bbox is None and self.features is None:
+            raise ValueError("NERRS requires a BBOX or Feature filter")
+
+        if self.bbox is not None and self.features is not None:
+            print "Both a BBox and Feature filter is defined, BBOX takes precedence"
+
+        # These are the features we will actually query against
+        query_features = self._get_query_features()
 
         if query_features is not None and len(query_features) > 0:
 
@@ -132,7 +153,7 @@ class NerrsSoap(Collector):
                     try:
                         response = self._makesoap(soap_env)
                         results[f] = etree.tostring(response)
-                    except XMLSyntaxError:
+                    except XMLSyntaxError as e:
                         pass
 
             return results
