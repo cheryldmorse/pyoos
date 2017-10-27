@@ -206,9 +206,10 @@ class TimeSeriesProfile(object):
         loc = [lon, lat]
         if z:
             loc.append(z)
-        else:
+        elif hasattr(station_point, 'z'):
             loc.append(station_point.z)
-
+        else:
+            loc.append(0.0)
         location = {'horizontal_srs' : hsrs,
                     'vertical_srs'   : vsrs,
                     'localFrame'     : local_frame,
@@ -341,7 +342,8 @@ class TimeSeriesProfile(object):
                         point, members = self._build_obs_point(sensor_info_, rec)
 
                         # add to profile
-                        profile_cache.add_obs(sensor_info_, cur_time, point, members)
+                        if point is not None:
+                            profile_cache.add_obs(sensor_info_, cur_time, point, members)
 
                     i += nc
 
@@ -423,11 +425,13 @@ class TimeSeriesProfile(object):
 
         elif 'profileIndex' in keys:
             zidx      = keys.index('profileIndex')
-            bin_index = int(obs_recs[zidx]['value'])
 
+            if obs_recs[zidx]['value'] == '':
+                return None, None
+            bin_index = int(obs_recs[zidx]['value'])
             # @TODO take into account orientation, may change x/y/z
             # @TODO bin edges?
-            z         = sensor_info['profile_bins']['bin_center']['values'][bin_index]
+            z         = sensor_info['profile_heights']['values'][bin_index]
 
             point     = sPoint(cur_point.x, cur_point.y, cur_point.z + z)
 

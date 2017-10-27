@@ -66,7 +66,6 @@ class TimeSeries(object):
                 loc.append(z)
 
             s.location = sPoint(*loc)
-
             # Sensors
             for sensor in station.content.get_by_name("sensors").content.field:
                 name        = sensor.name
@@ -102,7 +101,7 @@ class TimeSeries(object):
 
                 location            = sPoint(*loc)
 
-                sensors[name] = {   'station'           : s.uid,
+                sensors[sensor.id] = {   'station'           : s.uid,
                                     'name'              : name,
                                     'uri'               : uri,
                                     'horizontal_srs'    : horizontal_srs,
@@ -127,6 +126,9 @@ class TimeSeries(object):
         sensor_data = data_record.get_by_name("sensor")
         for sendata in sensor_data.content.item:
             if sendata.content is not None:
+                lookup_name = sendata.name
+                if sendata.name not in sensors:
+                    lookup_name = sensor_id_lookup[]
                 sensors[sendata.name]['columns'] = []
                 sensors[sendata.name]['values'] = []
                 for f in sendata.content.field:

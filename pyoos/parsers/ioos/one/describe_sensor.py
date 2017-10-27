@@ -141,9 +141,11 @@ class StationDS(DescribeSensor):
         # if no variables were picked up, fall back to using original SML
         # components instead
         if not self.variables:
-            self.variables = sorted([comp.values()[0] for
+                try:
+                    self.variables = sorted([comp.values()[0] for
                                     comp in self.system.components])
-
+                except:
+                    pass
 
 class SensorDS(DescribeSensor):
     def __init__(self, element):
